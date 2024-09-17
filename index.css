@@ -1,0 +1,32 @@
+.map {
+  width: 320px;
+  height: 320px;
+  position: relative;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character {
+  width: 16px;
+  height: 16px;
+  background-image: url('character.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: transparent;
+  position: absolute;
+  transition: top 0.3s, left 0.3s;
+  animation: walk 0.8s steps(4);
+}
+
+@keyframes walk {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -128px 0;
+  }
+}
