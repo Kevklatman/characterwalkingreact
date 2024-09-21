@@ -10,7 +10,7 @@ const Character = () => {
       switch (event.key) {
         case 'ArrowUp':
           setPosY(Math.max(posY - speed, 0));
-          break;
+          break;//
         case 'ArrowDown':
           setPosY(Math.min(posY + speed, 288));
           break;
