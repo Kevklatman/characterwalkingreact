@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './index.css'
+import './index.css';
 
 const Character = () => {
   const [posX, setPosX] = useState(144);
@@ -14,19 +14,19 @@ const Character = () => {
 
       switch (event.key) {
         case 'ArrowUp':
-          setPosY(Math.max(posY - speed, 0));
+          setPosY((prevPosY) => Math.max(prevPosY - speed, 0));
           setDirection('up');
           break;
         case 'ArrowDown':
-          setPosY(Math.min(posY + speed, 288));
+          setPosY((prevPosY) => Math.min(prevPosY + speed, window.innerHeight - 48));
           setDirection('down');
           break;
         case 'ArrowLeft':
-          setPosX(Math.max(posX - speed, 0));
+          setPosX((prevPosX) => Math.max(prevPosX - speed, 0));
           setDirection('left');
           break;
         case 'ArrowRight':
-          setPosX(Math.min(posX + speed, 288));
+          setPosX((prevPosX) => Math.min(prevPosX + speed, window.innerWidth - 48));
           setDirection('right');
           break;
         default:
@@ -45,7 +45,7 @@ const Character = () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [posX, posY]);
+  }, [speed]);
 
   return (
     <div

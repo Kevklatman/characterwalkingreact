@@ -1,9 +1,12 @@
-import React from 'react';
-import NewpalletTownImage from './NewpalletTown.png'; // Import the image file
+// Map.js
+import React, { useRef } from 'react';
+import NewpalletTownImage from './NewpalletTown.png';
 
 const Map = () => {
+  const mapRef = useRef(null);
+
   return (
-    <div className="map">
+    <div ref={mapRef} className="map">
       <img src={NewpalletTownImage} alt="Map" className="map-image" />
     </div>
   );
