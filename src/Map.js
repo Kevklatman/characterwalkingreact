@@ -1,11 +1,10 @@
 import React from 'react';
-import './index.css'
+import NewpalletTownImage from './NewpalletTown.png'; // Import the image file
 
 const Map = () => {
   return (
     <div className="map">
-      <img src="NewpalletTown.png
-      " alt="Map" className="map-image" />
+      <img src={NewpalletTownImage} alt="Map" className="map-image" />
     </div>
   );
 };
