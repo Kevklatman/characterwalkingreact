@@ -19,14 +19,33 @@
   background-color: transparent;
   position: absolute;
   transition: top 0.3s, left 0.3s;
+}
+
+.character.walking {
   animation: walk 0.8s steps(4);
+}
+
+.character.facing-down {
+  background-position: 0 0;
+}
+
+.character.facing-up {
+  background-position: 0 -16px;
+}
+
+.character.facing-left {
+  background-position: 0 -32px;
+}
+
+.character.facing-right {
+  background-position: 0 -48px;
 }
 
 @keyframes walk {
   0% {
-    background-position: 0 0;
+    background-position-x: 0;
   }
   100% {
-    background-position: -128px 0;
+    background-position-x: -64px;
   }
 }
