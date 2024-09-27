@@ -1,31 +1,25 @@
+// Character.js
 import React, { useState, useEffect } from 'react';
 import './index.css';
 
-const Character = () => {
-  const [posX, setPosX] = useState(144);
-  const [posY, setPosY] = useState(144);
+const Character = ({ mapRef }) => {
+  const [posX, setPosX] = useState(376);
+  const [posY, setPosY] = useState(276);
   const [direction, setDirection] = useState('down');
   const [walking, setWalking] = useState(false);
-  const [mapWidth, setMapWidth] = useState(window.innerWidth);
-  const [mapHeight, setMapHeight] = useState(window.innerHeight);
   const speed = 9;
 
   useEffect(() => {
-    const handleResize = () => {
-      setMapWidth(window.innerWidth);
-      setMapHeight(window.innerHeight);
-    };
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     const handleKeyDown = (event) => {
+      if (!mapRef.current) return;
+
       setWalking(true);
+
+      const mapRect = mapRef.current.getBoundingClientRect();
+      const characterWidth = 48;
+      const characterHeight = 48;
+      const mapWidth = mapRect.width;
+      const mapHeight = mapRect.height;
 
       switch (event.key) {
         case 'ArrowUp':
@@ -33,7 +27,9 @@ const Character = () => {
           setDirection('up');
           break;
         case 'ArrowDown':
-          setPosY((prevPosY) => Math.min(prevPosY + speed, mapHeight - 48));
+          setPosY((prevPosY) =>
+            Math.min(prevPosY + speed, mapHeight - characterHeight)
+          );
           setDirection('down');
           break;
         case 'ArrowLeft':
@@ -41,7 +37,9 @@ const Character = () => {
           setDirection('left');
           break;
         case 'ArrowRight':
-          setPosX((prevPosX) => Math.min(prevPosX + speed, mapWidth - 48));
+          setPosX((prevPosX) =>
+            Math.min(prevPosX + speed, mapWidth - characterWidth)
+          );
           setDirection('right');
           break;
         default:
@@ -60,14 +58,14 @@ const Character = () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [speed, mapWidth, mapHeight]);
+  }, [mapRef, speed]);
 
   return (
     <div
       className={`character ${walking ? 'walking' : ''} facing-${direction}`}
       style={{
-        top: posY + 'px',
         left: posX + 'px',
+        top: posY + 'px',
       }}
     ></div>
   );
