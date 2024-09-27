@@ -6,7 +6,22 @@ const Character = () => {
   const [posY, setPosY] = useState(144);
   const [direction, setDirection] = useState('down');
   const [walking, setWalking] = useState(false);
+  const [mapWidth, setMapWidth] = useState(window.innerWidth);
+  const [mapHeight, setMapHeight] = useState(window.innerHeight);
   const speed = 9;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setMapWidth(window.innerWidth);
+      setMapHeight(window.innerHeight);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -18,7 +33,7 @@ const Character = () => {
           setDirection('up');
           break;
         case 'ArrowDown':
-          setPosY((prevPosY) => Math.min(prevPosY + speed, window.innerHeight - 48));
+          setPosY((prevPosY) => Math.min(prevPosY + speed, mapHeight - 48));
           setDirection('down');
           break;
         case 'ArrowLeft':
@@ -26,7 +41,7 @@ const Character = () => {
           setDirection('left');
           break;
         case 'ArrowRight':
-          setPosX((prevPosX) => Math.min(prevPosX + speed, window.innerWidth - 48));
+          setPosX((prevPosX) => Math.min(prevPosX + speed, mapWidth - 48));
           setDirection('right');
           break;
         default:
@@ -45,7 +60,7 @@ const Character = () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [speed]);
+  }, [speed, mapWidth, mapHeight]);
 
   return (
     <div
