@@ -1,15 +1,14 @@
 // Map.js
-import React, { useRef } from 'react';
+import React, { forwardRef } from 'react';
 import NewpalletTownImage from './NewpalletTown.png';
 
-const Map = () => {
-  const mapRef = useRef(null);
-
+const Map = forwardRef((props, ref) => {
   return (
-    <div ref={mapRef} className="map">
+    <div ref={ref} className="map">
       <img src={NewpalletTownImage} alt="Map" className="map-image" />
+      {props.children}
     </div>
   );
-};
+});
 
 export default Map;

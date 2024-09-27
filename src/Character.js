@@ -71,4 +71,4 @@ const Character = ({ mapRef }) => {
   );
 };
 
-export default Character;
+export default Character;//
