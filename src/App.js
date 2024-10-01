@@ -1,3 +1,4 @@
+// App.js
 import React, { useRef, useState, useEffect } from 'react';
 import Map from './Map';
 import Character from './Character';
@@ -38,12 +39,14 @@ function App() {
           <p>Score: {gameState.score}</p>
           <p>Level: {gameState.level}</p>
         </div>
-        <Map ref={mapRef}>
-          <Character 
-            mapRef={mapRef} 
-            updateGameState={updateGameState}
-          />
-        </Map>
+        <div className="game-container">
+          <Map ref={mapRef}>
+            <Character 
+              mapRef={mapRef} 
+              updateGameState={updateGameState}
+            />
+          </Map>
+        </div>
       </div>
     </ErrorBoundary>
   );
