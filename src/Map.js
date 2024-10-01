@@ -1,12 +1,25 @@
 // Map.js
 import React, { forwardRef } from 'react';
-import NewpalletTownImage from './NewpalletTown.png';
+import './index.css';
+import NewpalletTown from './NewpalletTown.png';
 
-const Map = forwardRef((props, ref) => {
+const Map = forwardRef(({ children, walkableGrid }, ref) => {
   return (
-    <div ref={ref} className="map">
-      <img src={NewpalletTownImage} alt="Map" className="map-image" />
-      {props.children}
+    <div 
+      className="map" 
+      ref={ref}
+      style={{
+        backgroundImage: `url(${NewpalletTown})`,
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        width: '100%',
+        height: '0',
+        paddingBottom: '90%', // Adjust this value based on the aspect ratio
+        position: 'relative'
+      }}
+    >
+      {children}
     </div>
   );
 });
