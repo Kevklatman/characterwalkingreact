@@ -16,21 +16,25 @@ CHARACTER_WIDTH = TILE_SIZE
 CHARACTER_HEIGHT = TILE_SIZE
 
 # Game constants
-SPEED = 9
+SPEED = 8 # Adjusted for smoother movement (1/4 of a tile)
 
-# Define obstacles (example: list of rectangles [x, y, width, height])
+# Define obstacles (list of [tile_x, tile_y, tiles_width, tiles_height])
 OBSTACLES = [
-    [100, 100, 200, 50],
-    [400, 300, 100, 100],
+    [6, 6, 12, 3],   # An obstacle from (6,6) to (18,9) in tile coordinates
+    [25, 18, 6, 6],  # An obstacle from (25,18) to (31,24) in tile coordinates
     # Add more obstacles as needed
 ]
 
 def check_collision(x, y):
+    # Convert pixel coordinates to tile coordinates
+    tile_x = x // TILE_SIZE
+    tile_y = y // TILE_SIZE
+    
     for obstacle in OBSTACLES:
-        if (x < obstacle[0] + obstacle[2] and
-            x + CHARACTER_WIDTH > obstacle[0] and
-            y < obstacle[1] + obstacle[3] and
-            y + CHARACTER_HEIGHT > obstacle[1]):
+        if (tile_x < obstacle[0] + obstacle[2] and
+            tile_x + 1 > obstacle[0] and
+            tile_y < obstacle[1] + obstacle[3] and
+            tile_y + 1 > obstacle[1]):
             return True
     return False
 
@@ -69,4 +73,4 @@ api.add_resource(MoveCharacter, '/move')
 api.add_resource(StopCharacter, '/stop')
 
 if __name__ == '__main__':
-    app.run(debug=True) #
+    app.run(debug=True)
