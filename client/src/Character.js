@@ -7,48 +7,70 @@ const Character = ({ mapRef }) => {
   const [posY, setPosY] = useState(276);
   const [direction, setDirection] = useState('down');
   const [walking, setWalking] = useState(false);
-  const speed = 9;
 
   useEffect(() => {
-    const handleKeyDown = (event) => {
+    const handleKeyDown = async (event) => {
       if (!mapRef.current) return;
 
-      setWalking(true);
-
-      const mapRect = mapRef.current.getBoundingClientRect();
-      const characterWidth = 48;
-      const characterHeight = 48;
-      const mapWidth = mapRect.width;
-      const mapHeight = mapRect.height;
-
+      let newDirection;
       switch (event.key) {
         case 'ArrowUp':
-          setPosY((prevPosY) => Math.max(prevPosY - speed, 0));
-          setDirection('up');
+          newDirection = 'up';
           break;
         case 'ArrowDown':
-          setPosY((prevPosY) =>
-            Math.min(prevPosY + speed, mapHeight - characterHeight)
-          );
-          setDirection('down');
+          newDirection = 'down';
           break;
         case 'ArrowLeft':
-          setPosX((prevPosX) => Math.max(prevPosX - speed, 0));
-          setDirection('left');
+          newDirection = 'left';
           break;
         case 'ArrowRight':
-          setPosX((prevPosX) =>
-            Math.min(prevPosX + speed, mapWidth - characterWidth)
-          );
-          setDirection('right');
+          newDirection = 'right';
           break;
         default:
-          break;
+          return;
+      }
+
+      setDirection(newDirection);
+      setWalking(true);
+
+      try {
+        const response = await fetch('http://localhost:5000/move', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            x: posX,
+            y: posY,
+            direction: newDirection,
+          }),
+        });
+
+        const data = await response.json();
+        setPosX(data.x);
+        setPosY(data.y);
+        setWalking(data.walking);
+      } catch (error) {
+        console.error('Error:', error);
       }
     };
 
-    const handleKeyUp = () => {
+    const handleKeyUp = async () => {
       setWalking(false);
+      try {
+        await fetch('http://localhost:5000/stop', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            x: posX,
+            y: posY,
+          }),
+        });
+      } catch (error) {
+        console.error('Error:', error);
+      }
     };
 
     document.addEventListener('keydown', handleKeyDown);
@@ -58,7 +80,7 @@ const Character = ({ mapRef }) => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [mapRef, speed]);
+  }, [mapRef, posX, posY]);
 
   return (
     <div
@@ -71,4 +93,4 @@ const Character = ({ mapRef }) => {
   );
 };
 
-export default Character;//
+export default Character;
