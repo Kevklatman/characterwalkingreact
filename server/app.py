@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
 
@@ -6,7 +6,7 @@ app = Flask(__name__)
 api = Api(app)
 CORS(app)
 
-# Define map boundaries
+# Game constants
 TILE_SIZE = 16
 MAP_TILES_WIDTH = 50
 MAP_TILES_HEIGHT = 45
@@ -14,36 +14,53 @@ MAP_WIDTH = MAP_TILES_WIDTH * TILE_SIZE
 MAP_HEIGHT = MAP_TILES_HEIGHT * TILE_SIZE
 CHARACTER_WIDTH = TILE_SIZE
 CHARACTER_HEIGHT = TILE_SIZE
+SPEED = 8
 
-# Game constants
-SPEED = 8 # Adjusted for smoother movement (1/4 of a tile)
 
-# Define obstacles (list of [tile_x, tile_y, tiles_width, tiles_height])
-OBSTACLES = [
-    [6, 6, 12, 3],   # An obstacle from (6,6) to (18,9) in tile coordinates
-    [25, 18, 6, 6],  # An obstacle from (25,18) to (31,24) in tile coordinates
-    # Add more obstacles as needed
+
+# Define the path segments as tuples (start_x, start_y, end_x, end_y)
+PATH = [
+    (125, 230, 125, 310),
+    (125, 310, 470, 310),
+    (350, 310, 350, 170),
+    (350, 170, 380, 170),
+    (390, 0, 390, 150),
+    (390, 150, 380, 150),
+    (380, 150, 380, 170),
+    (350, 310, 350, 490),
+    (350, 490, 160, 490),
+    (160, 490, 160, 430),
+    (200, 490, 200, 550),
+    (200, 550, 230, 550),
+    (230, 550, 230, 590),
+    (230, 590, 290, 590),
+    (290, 590, 290, 610),
+    (290, 610, 515, 610),
+    (515, 610, 515, 590),
+    (515, 590, 525, 590),
+    (525, 590, 525, 460),
+    (525, 460, 513, 460),
+    (513, 460, 513, 450),
 ]
 
-def check_collision(x, y):
-    # Convert pixel coordinates to tile coordinates
-    tile_x = x // TILE_SIZE
-    tile_y = y // TILE_SIZE
-    
-    for obstacle in OBSTACLES:
-        if (tile_x < obstacle[0] + obstacle[2] and
-            tile_x + 1 > obstacle[0] and
-            tile_y < obstacle[1] + obstacle[3] and
-            tile_y + 1 > obstacle[1]):
+def is_on_path(x, y, path_width=16):
+    for start_x, start_y, end_x, end_y in PATH:
+        # Check if the character's position is within the path width
+        if (min(start_x, end_x) - path_width <= x <= max(start_x, end_x) + path_width and
+            min(start_y, end_y) - path_width <= y <= max(start_y, end_y) + path_width):
             return True
     return False
+
 
 class MoveCharacter(Resource):
     def post(self):
         data = request.get_json()
-        current_x = data['x']
-        current_y = data['y']
-        direction = data['direction']
+        try:
+            current_x = int(data['x'])
+            current_y = int(data['y'])
+            direction = data['direction']
+        except (KeyError, ValueError):
+            return jsonify({"error": "Invalid input data"}), 400
 
         new_x, new_y = current_x, current_y
 
@@ -55,17 +72,36 @@ class MoveCharacter(Resource):
             new_x = max(current_x - SPEED, 0)
         elif direction == 'right':
             new_x = min(current_x + SPEED, MAP_WIDTH - CHARACTER_WIDTH)
+        elif direction in ['upleft', 'upright', 'downleft', 'downright']:
+            dx = SPEED // 2 if 'right' in direction else -SPEED // 2
+            dy = SPEED // 2 if 'down' in direction else -SPEED // 2
+            new_x = max(min(current_x + dx, MAP_WIDTH - CHARACTER_WIDTH), 0)
+            new_y = max(min(current_y + dy, MAP_HEIGHT - CHARACTER_HEIGHT), 0)
+        else:
+            return jsonify({"error": "Invalid direction"}), 400
 
-        if not check_collision(new_x, new_y):
+        # Debugging output
+        print(f"Current position: ({current_x}, {current_y})")
+        print(f"New position: ({new_x}, {new_y})")
+        print(f"Direction: {direction}")
+
+        # Check if the new position is on the path
+        if is_on_path(new_x + CHARACTER_WIDTH // 2, new_y + CHARACTER_HEIGHT // 2):
+            print("Position is on path.")
             return {'x': new_x, 'y': new_y, 'walking': True, 'collision': False}, 200
         else:
+            print("Position is not on path. Collision detected.")
             return {'x': current_x, 'y': current_y, 'walking': True, 'collision': True}, 200
+
 
 class StopCharacter(Resource):
     def post(self):
         data = request.get_json()
-        current_x = data['x']
-        current_y = data['y']
+        try:
+            current_x = int(data['x'])
+            current_y = int(data['y'])
+        except (KeyError, ValueError):
+            return jsonify({"error": "Invalid input data"}), 400
 
         return {'x': current_x, 'y': current_y, 'walking': False}, 200
 
