@@ -1,4 +1,3 @@
-from flask import Flask
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
@@ -20,6 +19,9 @@ MAP_HEIGHT = MAP_TILES_HEIGHT * TILE_SIZE
 CHARACTER_WIDTH = TILE_SIZE
 CHARACTER_HEIGHT = TILE_SIZE
 SPEED = 8
+
+# Calculate path width and height as 3% of the image height
+PATH_WIDTH = int(IMAGE_HEIGHT * 0.03)
 
 # Define the path segments as tuples (start_x, start_y, end_x, end_y)
 PATH = [
@@ -46,28 +48,15 @@ PATH = [
     (513, 460, 513, 450),
 ]
 
-def is_on_path(x, y, path_width=16):
+def is_on_path(x, y, path_width=PATH_WIDTH):
     for start_x, start_y, end_x, end_y in PATH:
         # Check if the point (x, y) is within the path width of the line segment
         if start_x == end_x:  # Vertical line
-            if (min(start_y, end_y) <= y <= max(start_y, end_y) and
+            if (min(start_y, end_y) - path_width <= y <= max(start_y, end_y) + path_width and
                 start_x - path_width <= x <= start_x + path_width):
                 return True
         elif start_y == end_y:  # Horizontal line
-            if (min(start_x, end_x) <= x <= max(start_x, end_x) and
-                start_y - path_width <= y <= start_y + path_width):
-                return True
-    return False
-
-def is_on_path(x, y, path_width=16):
-    for start_x, start_y, end_x, end_y in PATH:
-        # Check if the point (x, y) is within the path width of the line segment
-        if start_x == end_x:  # Vertical line
-            if (min(start_y, end_y) <= y <= max(start_y, end_y) and
-                start_x - path_width <= x <= start_x + path_width):
-                return True
-        elif start_y == end_y:  # Horizontal line
-            if (min(start_x, end_x) <= x <= max(start_x, end_x) and
+            if (min(start_x, end_x) - path_width <= x <= max(start_x, end_x) + path_width and
                 start_y - path_width <= y <= start_y + path_width):
                 return True
     return False
@@ -105,9 +94,6 @@ class MoveCharacter(Resource):
             return {'x': new_x, 'y': new_y, 'walking': True, 'collision': False}, 200
         else:
             return {'x': current_x, 'y': current_y, 'walking': True, 'collision': True}, 200
-
-
-
 
 class StopCharacter(Resource):
     def post(self):
