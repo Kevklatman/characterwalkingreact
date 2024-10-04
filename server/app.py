@@ -6,17 +6,19 @@ app = Flask(__name__)
 api = Api(app)
 CORS(app)
 
+# Image dimensions (replace with actual dimensions)
+IMAGE_WIDTH = 800  # Replace with actual image width
+IMAGE_HEIGHT = 720  # Replace with actual image height
+
 # Game constants
 TILE_SIZE = 16
-MAP_TILES_WIDTH = 50
-MAP_TILES_HEIGHT = 45
+MAP_TILES_WIDTH = IMAGE_WIDTH // TILE_SIZE
+MAP_TILES_HEIGHT = IMAGE_HEIGHT // TILE_SIZE
 MAP_WIDTH = MAP_TILES_WIDTH * TILE_SIZE
 MAP_HEIGHT = MAP_TILES_HEIGHT * TILE_SIZE
 CHARACTER_WIDTH = TILE_SIZE
 CHARACTER_HEIGHT = TILE_SIZE
 SPEED = 8
-
-
 
 # Define the path segments as tuples (start_x, start_y, end_x, end_y)
 PATH = [
@@ -45,12 +47,29 @@ PATH = [
 
 def is_on_path(x, y, path_width=16):
     for start_x, start_y, end_x, end_y in PATH:
-        # Check if the character's position is within the path width
-        if (min(start_x, end_x) - path_width <= x <= max(start_x, end_x) + path_width and
-            min(start_y, end_y) - path_width <= y <= max(start_y, end_y) + path_width):
-            return True
+        # Check if the point (x, y) is within the path width of the line segment
+        if start_x == end_x:  # Vertical line
+            if (min(start_y, end_y) <= y <= max(start_y, end_y) and
+                start_x - path_width <= x <= start_x + path_width):
+                return True
+        elif start_y == end_y:  # Horizontal line
+            if (min(start_x, end_x) <= x <= max(start_x, end_x) and
+                start_y - path_width <= y <= start_y + path_width):
+                return True
     return False
 
+def is_on_path(x, y, path_width=16):
+    for start_x, start_y, end_x, end_y in PATH:
+        # Check if the point (x, y) is within the path width of the line segment
+        if start_x == end_x:  # Vertical line
+            if (min(start_y, end_y) <= y <= max(start_y, end_y) and
+                start_x - path_width <= x <= start_x + path_width):
+                return True
+        elif start_y == end_y:  # Horizontal line
+            if (min(start_x, end_x) <= x <= max(start_x, end_x) and
+                start_y - path_width <= y <= start_y + path_width):
+                return True
+    return False
 
 class MoveCharacter(Resource):
     def post(self):
@@ -80,18 +99,13 @@ class MoveCharacter(Resource):
         else:
             return jsonify({"error": "Invalid direction"}), 400
 
-        # Debugging output
-        print(f"Current position: ({current_x}, {current_y})")
-        print(f"New position: ({new_x}, {new_y})")
-        print(f"Direction: {direction}")
-
         # Check if the new position is on the path
         if is_on_path(new_x + CHARACTER_WIDTH // 2, new_y + CHARACTER_HEIGHT // 2):
-            print("Position is on path.")
             return {'x': new_x, 'y': new_y, 'walking': True, 'collision': False}, 200
         else:
-            print("Position is not on path. Collision detected.")
             return {'x': current_x, 'y': current_y, 'walking': True, 'collision': True}, 200
+
+
 
 
 class StopCharacter(Resource):
