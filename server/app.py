@@ -18,38 +18,40 @@ MAP_WIDTH = MAP_TILES_WIDTH * TILE_SIZE
 MAP_HEIGHT = MAP_TILES_HEIGHT * TILE_SIZE
 CHARACTER_WIDTH = TILE_SIZE
 CHARACTER_HEIGHT = TILE_SIZE
-SPEED = 8
+SPEED = 2
 
 # Calculate path width and height as 3% of the image height
-PATH_WIDTH = int(IMAGE_HEIGHT * 0.03)
+PATH_WIDTH = int(IMAGE_HEIGHT * 0.027)
 
 # Define the path segments as tuples (start_x, start_y, end_x, end_y)
+# Define the path segments as tuples (start_x, start_y, end_x, end_y, width)
 PATH = [
-    (125, 230, 125, 310),
-    (125, 310, 470, 310),
-    (350, 310, 350, 170),
-    (350, 170, 380, 170),
-    (390, 0, 390, 150),
-    (390, 150, 380, 150),
-    (380, 150, 380, 170),
-    (350, 310, 350, 490),
-    (350, 490, 160, 490),
-    (160, 490, 160, 430),
-    (200, 490, 200, 550),
-    (200, 550, 230, 550),
-    (230, 550, 230, 590),
-    (230, 590, 290, 590),
-    (290, 590, 290, 610),
-    (290, 610, 515, 610),
-    (515, 610, 515, 590),
-    (515, 590, 525, 590),
-    (525, 590, 525, 460),
-    (525, 460, 513, 460),
-    (513, 460, 513, 450),
+    (125, 230, 125, 310, 18),
+    (125, 300, 470, 300, 18),
+    (350, 300, 350, 170, 18),
+    (350, 170, 380, 170, 18),
+    (390, 0, 390, 150, 20),
+    (390, 150, 380, 150, 18),
+    (380, 150, 380, 170, 18),
+    (350, 310, 350, 490, 22),
+    (350, 490, 160, 490, 25),
+    (160, 490, 160, 430, 20),
+    (200, 490, 200, 550, 20),
+    (200, 550, 230, 550, 18),
+    (230, 550, 230, 590, 18),
+    (230, 590, 290, 590, 20),
+    (290, 590, 290, 610, 20),
+    (290, 610, 515, 610, 25),
+    (515, 610, 515, 590, 20),
+    (515, 590, 525, 590, 18),
+    (525, 590, 525, 460, 20),
+    (525, 460, 513, 460, 18),
+    (513, 460, 513, 450, 18),
 ]
 
-def is_on_path(x, y, path_width=PATH_WIDTH):
-    for start_x, start_y, end_x, end_y in PATH:
+
+def is_on_path(x, y):
+    for start_x, start_y, end_x, end_y, path_width in PATH:
         # Check if the point (x, y) is within the path width of the line segment
         if start_x == end_x:  # Vertical line
             if (min(start_y, end_y) - path_width <= y <= max(start_y, end_y) + path_width and
@@ -60,6 +62,7 @@ def is_on_path(x, y, path_width=PATH_WIDTH):
                 start_y - path_width <= y <= start_y + path_width):
                 return True
     return False
+
 
 class MoveCharacter(Resource):
     def post(self):
