@@ -49,3 +49,36 @@
 
 
   
+ /* Add to your index.css */
+.character.npc-1 {
+  /* Adjust the sprite position for different NPC types */
+  background-image: url('npc1.jpg');
+}
+
+.character.npc-2 {
+  background-image: url('npc2.jpg');
+}
+
+.character {
+  /* Keep your existing character styles */
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: absolute;
+  transition: left 0.1s, top 0.1s;
+  z-index: 1;
+}
+
+/* Add a slight shadow to make characters stand out */
+.character::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
