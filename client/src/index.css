@@ -1,6 +1,6 @@
 .game-container {
   width: 100%;
-  max-width: 800px;  /* Adjust this value as needed */
+  max-width: 800px;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
@@ -13,7 +13,7 @@
   background-position: center;
   width: 100%;
   height: 0;
-  padding-bottom: 90%;  /* Adjust this value to match your map's aspect ratio */
+  padding-bottom: 90%;
   position: relative;
 }
 
@@ -76,4 +76,34 @@
   height: 4px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 50%;
+}
+
+/* Map transition styles */
+.map-transitioning {
+  opacity: 0;
+}
+
+.character.transitioning {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.game-map {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.map-outside {
+  background-image: url('NewpalletTown.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.map-house {
+  background-image: url('House1Interior.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }

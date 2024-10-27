@@ -2,7 +2,7 @@
 import React, { forwardRef, useState, useEffect } from 'react';
 import AICharacter from './AICharacter';
 
-const Map = forwardRef(({ children }, ref) => {
+const Map = forwardRef(({ children, backgroundImage }, ref) => {
   const [aiCharacters, setAICharacters] = useState([]);
 
   useEffect(() => {
@@ -17,13 +17,18 @@ const Map = forwardRef(({ children }, ref) => {
       }
     };
 
-    // Update AI characters every 16ms (approximately 60 FPS)
     const interval = setInterval(updateAICharacters, 16);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className="map" ref={ref}>
+    <div 
+      className="map" 
+      ref={ref}
+      style={{
+        backgroundImage: `url(${backgroundImage})`
+      }}
+    >
       {aiCharacters.map(char => (
         <AICharacter
           key={char.id}

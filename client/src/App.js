@@ -4,22 +4,56 @@ import Character from './Character';
 import LoadingScreen from './LoadingScreen';
 import ErrorBoundary from './ErrorBoundary';
 import audioManager from './audio';
+import newPalletTown from './NewpalletTown.png';
+import houseInterior from './House1Interior.png';
+
+const MAPS = {
+  outside: {
+    backgroundImage: newPalletTown,  // Note the leading slash
+    spawnPoints: {
+      default: { x: 376, y: 300 },
+      fromHouse: { x: 380, y: 160 }
+    }
+  },
+  house: {
+    backgroundImage: houseInterior,  // Note the leading slash
+    spawnPoints: {
+      default: { x: 240, y: 400 },
+      fromOutside: { x: 240, y: 420 }
+    }
+  }
+};
 
 function App() {
     const mapRef = useRef(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentMap, setCurrentMap] = useState('outside');
     const [isMusicEnabled, setIsMusicEnabled] = useState(false);
     const [volume, setVolume] = useState(0.5);
+    const [playerPosition, setPlayerPosition] = useState(MAPS[currentMap].spawnPoints.default);
 
     useEffect(() => {
-        // Simulate asset loading
         const loadAssets = async () => {
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            setIsLoading(false);
+            // Check if map image is loading
+            const img = new Image();
+            img.src = MAPS[currentMap].backgroundImage;
+            img.onload = () => {
+                console.log('Map image loaded successfully');
+                setIsLoading(false);
+            };
+            img.onerror = (e) => {
+                console.error('Error loading map image:', e);
+                setIsLoading(false); // Still set loading to false to allow interaction
+            };
         };
 
         loadAssets();
-    }, []);
+    }, [currentMap]);
+
+    const handleMapTransition = (newMap, spawnPoint = 'default') => {
+        setCurrentMap(newMap);
+        setPlayerPosition(MAPS[newMap].spawnPoints[spawnPoint]);
+    };
 
     const toggleMusic = () => {
         if (isMusicEnabled) {
@@ -43,7 +77,6 @@ function App() {
     return (
         <ErrorBoundary>
             <div className="app">
-                {/* Audio Controls */}
                 <div className="audio-controls absolute top-4 right-4 flex items-center gap-4 bg-black/50 p-2 rounded">
                     <button 
                         onClick={toggleMusic}
@@ -67,8 +100,16 @@ function App() {
                 </div>
 
                 <div className="game-container">
-                    <Map ref={mapRef}>
-                        <Character mapRef={mapRef} />
+                    <Map 
+                        ref={mapRef}
+                        backgroundImage={MAPS[currentMap].backgroundImage}
+                    >
+                        <Character 
+                            mapRef={mapRef}
+                            currentMap={currentMap}
+                            onMapTransition={handleMapTransition}
+                            initialPosition={playerPosition}
+                        />
                     </Map>
                 </div>
             </div>
