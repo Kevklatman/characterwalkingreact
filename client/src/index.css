@@ -34,10 +34,12 @@
   background-image: url('character.png');
 }
 
-.character.walking {
-  animation: walk 0.8s steps(4) infinite;
+/* NPC styles */
+.character.npc-1 {
+  background-image: url('image.png');
 }
 
+/* Common direction styles for both player and NPC */
 .character.facing-down {
   background-position: 0 0;
 }
@@ -54,24 +56,13 @@
   background-position: 0 -48px;
 }
 
-/* NPC styles */
-.character.npc-1 {
-  background-image: url('image.png');
-  background-size: 16px 48px; /* Width of one frame x Total height of 3 frames */
-}
-
-.character.npc-1.walking {
-  animation: npcWalk 0.6s steps(3) infinite;
+.character.walking {
+  animation: walk 0.8s steps(4);
 }
 
 @keyframes walk {
   from { background-position-x: 0; }
-  to { background-position-x: -64px; } /* 4 frames * 16px width */
-}
-
-@keyframes npcWalk {
-  from { background-position-y: 0; }
-  to { background-position-y: -48px; } /* 3 frames * 16px height */
+  to { background-position-x: -64px; }
 }
 
 /* Shadow effect for all characters */
