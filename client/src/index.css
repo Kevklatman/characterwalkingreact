@@ -45,11 +45,11 @@
 }
 
 .character.facing-up {
-  background-position: 0 -20px;
+  background-position: 0 -16px;
 }
 
 .character.facing-left {
-  background-position: 0 -30px;
+  background-position: 0 -32px;
 }
 
 .character.facing-right {
