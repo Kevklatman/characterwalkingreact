@@ -107,3 +107,18 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+
+.map {
+  transition: opacity 0.5s ease-in-out;
+}
+
+.character.transitioning {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Optional: Add a fade effect to the whole game container during transition */
+.game-container.transitioning {
+  background-color: black;
+  transition: background-color 0.5s ease-in-out;
+}

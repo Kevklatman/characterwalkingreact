@@ -1,13 +1,60 @@
-// Character.js
 import React, { useState, useEffect } from 'react';
-import { checkTransitionPoint } from './MapTransition';
 import './index.css';
 
-const Character = ({ mapRef, currentMap, onMapTransition }) => {
-  const [posX, setPosX] = useState(376);
-  const [posY, setPosY] = useState(300);
+const Character = ({ mapRef, currentMap, onMapTransition, initialPosition }) => {
+  const [posX, setPosX] = useState(initialPosition?.x || 376);
+  const [posY, setPosY] = useState(initialPosition?.y || 300);
   const [direction, setDirection] = useState('down');
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Reset position when initialPosition changes
+  useEffect(() => {
+    if (initialPosition) {
+      setPosX(initialPosition.x);
+      setPosY(initialPosition.y);
+    }
+  }, [initialPosition]);
+
+  const checkMapTransition = (x, y) => {
+    // Top of the screen transition
+    if (y < 0) {
+      if (currentMap === 'outside') {
+        return {
+          newMap: 'house',
+          spawnPoint: 'fromOutside',
+          newY: 400  // Appear at bottom of house
+        };
+      } else if (currentMap === 'house') {
+        return {
+          newMap: 'outside',
+          spawnPoint: 'fromHouse',
+          newY: 300  // Appear at middle of outside map
+        };
+      }
+    }
+    return null;
+  };
+
+  const handleMapTransition = async (transitionData) => {
+    setIsTransitioning(true);
+    
+    // Fade out
+    const characterElement = document.querySelector('.character');
+    characterElement.classList.add('transitioning');
+    
+    // Wait for fade out animation
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    // Update position and map
+    setPosX(posX);
+    setPosY(transitionData.newY);
+    onMapTransition(transitionData.newMap, transitionData.spawnPoint);
+    
+    // Wait a bit then fade back in
+    await new Promise(resolve => setTimeout(resolve, 100));
+    characterElement.classList.remove('transitioning');
+    setIsTransitioning(false);
+  };
 
   useEffect(() => {
     const handleKeyDown = async (event) => {
@@ -62,10 +109,10 @@ const Character = ({ mapRef, currentMap, onMapTransition }) => {
           setPosX(newPosX);
           setPosY(newPosY);
 
-          // Check for map transition points
-          const destination = checkTransitionPoint(newPosX, newPosY, currentMap);
-          if (destination) {
-            handleMapTransition(destination);
+          // Check for map transition
+          const transitionData = checkMapTransition(newPosX, newPosY);
+          if (transitionData) {
+            handleMapTransition(transitionData);
           }
         }
       } catch (error) {
@@ -78,27 +125,6 @@ const Character = ({ mapRef, currentMap, onMapTransition }) => {
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [mapRef, posX, posY, direction, currentMap, isTransitioning]);
-
-  const handleMapTransition = async (destination) => {
-    setIsTransitioning(true);
-    
-    // Add transition animation class
-    const characterElement = document.querySelector('.character');
-    characterElement.classList.add('transitioning');
-    
-    // Wait for animation
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Update position and map
-    setPosX(destination.x);
-    setPosY(destination.y);
-    setDirection(destination.facing);
-    onMapTransition(destination.mapName);
-    
-    // Remove transition animation
-    characterElement.classList.remove('transitioning');
-    setIsTransitioning(false);
-  };
 
   return (
     <div
