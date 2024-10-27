@@ -16,7 +16,7 @@ class AICharacter:
     target_x: float
     target_y: float
     is_moving: bool
-    speed: float = 2.0  # Increased speed to match player
+    speed: float = 2.0
     home_x: float = 0.0
     home_y: float = 0.0
     roam_radius: float = 20.0
@@ -33,31 +33,13 @@ class AIMovementSystem:
         self.lock = threading.Lock()
         self.TILE_SIZE = 16  # Size of one movement step
         
-        # Initialize NPCs with their home positions and characteristics
+        # Initialize single NPC
         self.add_character(
-            "shopkeeper", 
-            350, 170,
-            "npc-1", 
+            "npc1", 
+            350, 170,  # Starting position
+            "npc-1",   # Character type
             roam_radius=48,  # 3 tiles
             pause_chance=0.4,
-            pause_time=(2, 4)
-        )
-        
-        self.add_character(
-            "wanderer", 
-            125, 230, 
-            "npc-2", 
-            roam_radius=80,  # 5 tiles
-            pause_chance=0.3,
-            pause_time=(1, 3)
-        )
-        
-        self.add_character(
-            "trainer", 
-            200, 490, 
-            "npc-1", 
-            roam_radius=64,  # 4 tiles
-            pause_chance=0.35,
             pause_time=(2, 4)
         )
         
@@ -69,14 +51,11 @@ class AIMovementSystem:
     def _generate_movement_pattern(self) -> List[Tuple[str, int]]:
         """Generate a random movement pattern consisting of directions and step counts."""
         patterns = [
-            # Various movement patterns
             [("up", 2), ("pause", 1), ("down", 1), ("pause", 1)],
             [("left", 2), ("pause", 1), ("right", 2), ("pause", 1)],
             [("up", 1), ("right", 1), ("pause", 1), ("left", 1), ("down", 1)],
             [("down", 2), ("pause", 1), ("up", 1), ("pause", 1)],
             [("right", 3), ("pause", 1), ("left", 3), ("pause", 1)],
-            [("up", 1), ("pause", 1), ("up", 1), ("pause", 1), ("down", 2)],
-            [("left", 1), ("pause", 1), ("left", 1), ("pause", 1), ("right", 2)],
         ]
         return random.choice(patterns)
 
@@ -196,30 +175,28 @@ class AIMovementSystem:
         char.x += dx * ratio
         char.y += dy * ratio
 
-    # [Rest of the methods remain the same: _point_line_distance, _is_on_path, get_all_characters, cleanup, etc.]
-
     def _point_line_distance(self, x: float, y: float, x1: float, y1: float, x2: float, y2: float) -> float:
-            """Calculate the shortest distance between a point and a line segment."""
-            A = x - x1
-            B = y - y1
-            C = x2 - x1
-            D = y2 - y1
+        """Calculate the shortest distance between a point and a line segment."""
+        A = x - x1
+        B = y - y1
+        C = x2 - x1
+        D = y2 - y1
 
-            dot = A * C + B * D
-            len_sq = C * C + D * D
-            param = dot / len_sq if len_sq != 0 else -1
+        dot = A * C + B * D
+        len_sq = C * C + D * D
+        param = dot / len_sq if len_sq != 0 else -1
 
-            if param < 0:
-                xx, yy = x1, y1
-            elif param > 1:
-                xx, yy = x2, y2
-            else:
-                xx = x1 + param * C
-                yy = y1 + param * D
+        if param < 0:
+            xx, yy = x1, y1
+        elif param > 1:
+            xx, yy = x2, y2
+        else:
+            xx = x1 + param * C
+            yy = y1 + param * D
 
-            dx = x - xx
-            dy = y - yy
-            return math.sqrt(dx * dx + dy * dy)
+        dx = x - xx
+        dy = y - yy
+        return math.sqrt(dx * dx + dy * dy)
 
     def _is_on_path(self, x: float, y: float) -> bool:
         """Check if a point is within the valid path area."""

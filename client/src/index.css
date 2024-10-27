@@ -20,16 +20,22 @@
 .character {
   width: 16px;
   height: 16px;
-  background-image: url('character.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-color: transparent;
   position: absolute;
-  transition: left 0.3s, top 0.3s;
+  transition: left 0.1s, top 0.1s;
+  z-index: 1;
+  image-rendering: pixelated;
+}
+
+/* Player character styles */
+.character:not(.npc-1) {
+  background-image: url('character.png');
 }
 
 .character.walking {
-  animation: walk 0.8s steps(4);
+  animation: walk 0.8s steps(4) infinite;
 }
 
 .character.facing-down {
@@ -45,32 +51,30 @@
 }
 
 .character.facing-right {
-  background-position: 0 -48px;}
+  background-position: 0 -48px;
+}
 
-
-  
- /* Add to your index.css */
+/* NPC styles */
 .character.npc-1 {
-  /* Adjust the sprite position for different NPC types */
-  background-image: url('npc1.jpg');
+  background-image: url('image.png');
+  background-size: 16px 48px; /* Width of one frame x Total height of 3 frames */
 }
 
-.character.npc-2 {
-  background-image: url('npc2.jpg');
+.character.npc-1.walking {
+  animation: npcWalk 0.6s steps(3) infinite;
 }
 
-.character {
-  /* Keep your existing character styles */
-  width: 16px;
-  height: 16px;
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: absolute;
-  transition: left 0.1s, top 0.1s;
-  z-index: 1;
+@keyframes walk {
+  from { background-position-x: 0; }
+  to { background-position-x: -64px; } /* 4 frames * 16px width */
 }
 
-/* Add a slight shadow to make characters stand out */
+@keyframes npcWalk {
+  from { background-position-y: 0; }
+  to { background-position-y: -48px; } /* 3 frames * 16px height */
+}
+
+/* Shadow effect for all characters */
 .character::after {
   content: '';
   position: absolute;
